@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistir Série</title>
+    <style>
+        body { margin: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: white; background-color: #141414; }
+        .hero-serie { height: 80vh; position: relative; background: linear-gradient(to right, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0) 100%), linear-gradient(to top, #141414 5%, transparent 30%), url('https://via.placeholder.com/1920x1080'); background-size: cover; background-position: center top; display: flex; align-items: center; }
+        .conteudo-hero { padding-left: 50px; max-width: 600px; z-index: 10; }
+        .logo-serie { font-size: 4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .info-tecnica { font-size: 1.1rem; margin-bottom: 20px; font-weight: bold; }
+        .match { color: #46d369; }
+        .sinopse { font-size: 1.2rem; line-height: 1.5; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+        
+        .voltar-topo { position: absolute; top: 20px; left: 20px; text-decoration: none; color: white; font-weight: bold; opacity: 0.7; z-index: 20; cursor: pointer; background: none; border: none; font-size: 1rem; }
+
+        .container-episodios { padding: 40px; background-color: #141414; }
+        h3 { border-bottom: 1px solid #444; padding-bottom: 10px; color: #999; }
+        .episodio-item { display: flex; align-items: center; padding: 20px; border-bottom: 1px solid #333; cursor: pointer; transition: background 0.2s; border-radius: 5px; }
+        .episodio-item:hover { background-color: #333; }
+        .numero-ep { font-size: 1.5rem; color: #dcdcdc; width: 40px; font-weight: bold; }
+        .thumb-ep { width: 120px; height: 70px; background-color: #333; margin-right: 20px; border-radius: 4px; overflow: hidden; position: relative; }
+        .thumb-ep img { width: 100%; height: 100%; object-fit: cover; }
+        .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; opacity: 0.8; text-shadow: 0 0 5px black; }
+        .info-ep { flex: 1; }
+        .titulo-ep { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+        .desc-ep { font-size: 0.9rem; color: #999; }
+
+        #area-do-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: black; z-index: 100; display: none; justify-content: center; align-items: center; }
+        iframe, video { width: 90%; height: 90%; border: none; background: black; }
+        .fechar-video { position: absolute; top: 20px; right: 40px; font-size: 50px; color: white; cursor: pointer; opacity: 0.7; z-index: 101; }
+    </style>
+</head>
+<body>
+
+    <button onclick="history.back()" class="voltar-topo">⬅ Voltar</button>
+
+    <div class="hero-serie">
+        <div class="conteudo-hero">
+            <div class="logo-serie">Título Série</div>
+            <div class="info-tecnica"><span class="match">98% Relevante</span> &nbsp;|&nbsp; 2024</div>
+            <p class="sinopse">Sinopse da série...</p>
+        </div>
+    </div>
+
+    <div class="container-episodios">
+        <h3>Episódios</h3>
+        
+        <div class="episodio-item" onclick="tocarEpisodio('LINK_AQUI')">
+            <div class="numero-ep">1</div>
+            <div class="thumb-ep">
+                <img src="https://via.placeholder.com/150x100" alt="Cena">
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="info-ep">
+                <div class="titulo-ep">Nome do Episódio</div>
+                <div class="desc-ep">Descrição...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="area-do-video">
+        <div class="fechar-video" onclick="fecharVideo()">&times;</div>
+        <div id="player-container" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"></div>
+    </div>
+
+    <script>
+        const areaVideo = document.getElementById('area-do-video');
+        const playerContainer = document.getElementById('player-container');
+        function tocarEpisodio(url) {
+            if (!url) return;
+            areaVideo.style.display = 'flex';
+            playerContainer.innerHTML = ''; 
+            if (url.includes('drive.google.com')) {
+                let driveLink = url.replace('/view', '/preview').replace('/usp=sharing', '');
+                if (!driveLink.includes('/preview')) {
+                    const idMatch = url.match(/\/d\/(.*?)\//);
+                    if (idMatch) driveLink = 'https://drive.google.com/file/d/' + idMatch[1] + '/preview';
+                }
+                playerContainer.innerHTML = `<iframe src="${driveLink}" allow="autoplay" allowfullscreen></iframe>`;
+            } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                let videoId = url.split('v=')[1];
+                if (!videoId && url.includes('youtu.be')) videoId = url.split('/').pop();
+                const amp = videoId ? videoId.indexOf('&') : -1;
+                if(amp !== -1) videoId = videoId.substring(0, amp);
+                playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
+            } else {
+                playerContainer.innerHTML = `<video controls autoplay name="media"><source src="${url}" type="video/mp4"></video>`;
+            }
+        }
+        function fecharVideo() { areaVideo.style.display = 'none'; playerContainer.innerHTML = ''; }
+    </script>
+</body>
+</html>

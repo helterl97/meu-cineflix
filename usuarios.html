@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quem está assistindo?</title>
+    <style>
+        body { background-color: #141414; color: white; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { font-size: 3.5rem; font-weight: normal; margin-bottom: 50px; }
+        .container-perfis { display: flex; gap: 30px; }
+        .perfil { cursor: pointer; text-decoration: none; color: grey; text-align: center; transition: color 0.3s; }
+        .perfil:hover { color: white; }
+        .avatar { width: 150px; height: 150px; background-color: #333; border-radius: 10px; margin-bottom: 15px; background-size: cover; border: 3px solid transparent; transition: border-color 0.3s; }
+        .cor-1 { background-color: #e50914; } 
+        .perfil:hover .avatar { border-color: white; }
+        .nome { font-size: 1.5rem; display: block; }
+    </style>
+</head>
+<body>
+
+    <h1>Quem está assistindo?</h1>
+
+    <div class="container-perfis">
+        
+        <div class="perfil" onclick="verificarSenha('mestre')">
+            <div class="avatar" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png');"></div>
+            <span class="nome">Mestre 🔒</span>
+        </div>
+
+        <div class="perfil" onclick="verificarSenha('visitante')">
+            <div class="avatar cor-1"></div>
+            <span class="nome">Visitante 🔒</span>
+        </div>
+
+    </div>
+
+    <script>
+        // Senha '1234'
+        const hashMestre = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+        // Senha '0000'
+        const hashVisitante = "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0";
+
+        async function verificarSenha(usuario) {
+            const entrada = prompt("Digite a senha para " + usuario.toUpperCase() + ":");
+            if (!entrada) return;
+
+            const hashDigitado = await gerarHash(entrada);
+
+            if (usuario === 'mestre' && hashDigitado === hashMestre) {
+                window.location.href = "index.html";
+            } 
+            else if (usuario === 'visitante' && hashDigitado === hashVisitante) {
+                window.location.href = "visitante.html";
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
+
+        async function gerarHash(texto) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(texto);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    </script>
+</body>
+</html>
